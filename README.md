@@ -40,3 +40,19 @@ npm run build
 ```
 npm run lint
 ```
+
+# Tips
+
+### Problem: The Component isn’t reloading
+
+What’s going on here, is that our router sees that we’re loading the same ‘event-list’ named route, so it doesn’t need to reload the component. This is like clicking a navigation link twice. When someone clicks on a navigation link twice and they’re already on that page, do we want it to reload the component? No. That’s what’s going on. created() is not getting called again when we go to the second page, because it’s not reloading the component.
+
+Inevitably, you’ll run into this as a Vue developer: where you want to reload a component with a change of query parameters.
+
+#### Solution: Updating our router view
+
+There are two ways to fix this:
+
+1. Watch the page computed property to see if it changes (which it does when we change the page), and when it does, dispatch the fetchEvent action.
+
+2. Tell our router to reload components when the full URL changes, including the query parameters. We’ll do this. It’s super simple.

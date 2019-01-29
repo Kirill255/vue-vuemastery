@@ -10,8 +10,10 @@ const apiClient = axios.create({
 });
 
 export default {
-  getEvents() {
-    return apiClient.get("/events");
+  // https://github.com/typicode/json-server#paginate
+  // So if we construct a URL like so: /events?_limit=3&_page=2 our API will return 3 events per page, and will give us the events to list on page 2.
+  getEvents(perPage, page) {
+    return apiClient.get("/events?_limit=" + perPage + "&_page=" + page);
   },
   getEvent(id) {
     return apiClient.get("/events/" + id);

@@ -16,7 +16,9 @@ export default new Vuex.Store({
       "food",
       "community"
     ],
-    events: []
+    events: [],
+    eventsTotal: 0,
+    event: {}
   },
   mutations: {
     ADD_EVENT(state, event) {
@@ -24,6 +26,12 @@ export default new Vuex.Store({
     },
     SET_EVENTS(state, events) {
       state.events = events;
+    },
+    SET_EVENTS_TOTAL(state, eventsTotal) {
+      state.eventsTotal = eventsTotal;
+    },
+    SET_EVENT(state, event) {
+      state.event = event;
     }
   },
   actions: {
@@ -32,14 +40,37 @@ export default new Vuex.Store({
         commit("ADD_EVENT", event);
       });
     },
-    fetchEvents({ commit }) {
-      EventService.getEvents()
+    fetchEvents({ commit }, { perPage, page }) {
+      EventService.getEvents(perPage, page)
         .then(response => {
+          // json-server is actually giving us this data on each event request listing as a header
+          // console.log("Total events are " + response.headers["x-total-count"]);
+          commit(
+            "SET_EVENTS_TOTAL",
+            parseInt(response.headers["x-total-count"])
+          );
           commit("SET_EVENTS", response.data);
         })
         .catch(error => {
           console.log("There was an error:", error.response);
         });
+    },
+    fetchEvent({ commit, getters }, id) {
+      // We’re Loading Data Twice. We happen to be loading all the data we need to show an event on the EventList page. If we view the EventList page first, then the EventShow page (which many users will do), it seems wasteful to do another call to the API, when we already have the data needed in hand. How might we save our code an extra call?
+
+      var event = getters.getEventById(id);
+
+      if (event) {
+        commit("SET_EVENT", event);
+      } else {
+        EventService.getEvent(id)
+          .then(response => {
+            commit("SET_EVENT", response.data);
+          })
+          .catch(error => {
+            console.log("There was an error:", error.response);
+          });
+      }
     }
   },
   getters: {
