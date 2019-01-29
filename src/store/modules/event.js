@@ -24,36 +24,46 @@ export const mutations = {
 };
 
 export const actions = {
-  /* eslint-disable-next-line */
-  createEvent({ commit, dispatch, rootState }, event) {
-    // Accessing State in Other Modules, I can access rootGetters in the same way
-    // console.log("User creating Event is " + rootState.user.user.name);
+  createEvent({ commit, dispatch }, event) {
+    return EventService.postEvent(event)
+      .then(() => {
+        commit("ADD_EVENT", event);
 
-    // Without namespaced = true !!!
-    // Accessing another Module’s Actions. Yup, we don’t need to mention what module actionToCall is in. This is because by default all our actions, mutations, and getters are located in the Global NameSpace
-    // dispatch("actionToCall");
+        const notification = {
+          type: "success",
+          message: "Your event has been created!"
+        };
 
-    // With namespaced = true !!!
-    // If your action is inside of your current module
-    // dispatch("actionToCall");
-    // if the action I want to call is in another module
-    // dispatch("moduleName/actionToCall", null, { root: true });
+        dispatch("notification/add", notification, { root: true });
+      })
+      .catch(error => {
+        const notification = {
+          type: "error",
+          message: "There was a problem creating your event: " + error.message
+        };
 
-    return EventService.postEvent(event).then(() => {
-      commit("ADD_EVENT", event);
-    });
+        dispatch("notification/add", notification, { root: true });
+
+        throw error;
+      });
   },
-  fetchEvents({ commit }, { perPage, page }) {
+  fetchEvents({ commit, dispatch }, { perPage, page }) {
     EventService.getEvents(perPage, page)
       .then(response => {
         commit("SET_EVENTS_TOTAL", parseInt(response.headers["x-total-count"]));
         commit("SET_EVENTS", response.data);
       })
       .catch(error => {
-        console.log("There was an error:", error.response);
+        // console.log("There was an error:", error.response);
+        const notification = {
+          type: "error",
+          message: "There was a problem fetching events: " + error.message
+        };
+
+        dispatch("notification/add", notification, { root: true });
       });
   },
-  fetchEvent({ commit, getters }, id) {
+  fetchEvent({ commit, getters, dispatch }, id) {
     var event = getters.getEventById(id);
 
     if (event) {
@@ -64,7 +74,13 @@ export const actions = {
           commit("SET_EVENT", response.data);
         })
         .catch(error => {
-          console.log("There was an error:", error.response);
+          // console.log("There was an error:", error.response);
+          const notification = {
+            type: "error",
+            message: "There was a problem fetching event: " + error.message
+          };
+
+          dispatch("notification/add", notification, { root: true });
         });
     }
   }
