@@ -1,8 +1,8 @@
 <template>
   <div>
-    <h1>Events Listing</h1>
+    <h1>Events for {{ user.user.name }}</h1>
     <EventCard
-      v-for="event in events"
+      v-for="event in event.events"
       :key="event.id"
       :event="event"
     />
@@ -37,18 +37,18 @@ export default {
     // We don't need it to be reactive, and this way our component has access to it.
     this.perPage = 3;
 
-    this.$store.dispatch("fetchEvents", {
+    this.$store.dispatch("event/fetchEvents", {
       perPage: this.perPage,
       page: this.page
     });
   },
   computed: {
-    ...mapState(["events", "eventsTotal"]),
+    ...mapState(["event", "user"]),
     page() {
       return parseInt(this.$route.query.page) || 1;
     },
     hasNextPage() {
-      return this.eventsTotal > this.page * this.perPage;
+      return this.event.eventsTotal > this.page * this.perPage;
     }
   }
 };

@@ -56,3 +56,37 @@ There are two ways to fix this:
 1. Watch the page computed property to see if it changes (which it does when we change the page), and when it does, dispatch the fetchEvent action.
 
 2. Tell our router to reload components when the full URL changes, including the query parameters. We’ll do this. It’s super simple.
+
+### Alternate Syntax for Modules
+
+```js
+// /src/store/store.js
+import * as event from "@/store/modules/event.js";
+
+// /src/store/modules/event.js
+import EventService from '@/services/EventService.js'
+
+// export const namespaced = true;
+export const state = { ... }
+export const mutations = { ... }
+export const actions = { ... }
+export const getters = { ... }
+```
+
+```js
+// /src/store/store.js
+import event from "@/store/modules/event.js";
+
+// /src/store/modules/event.js
+import EventService from '@/services/EventService.js'
+
+export default {
+    // namespaced: true,
+    state: { ... },
+    mutations: { ... },
+    actions: { ... },
+    getters: { ... }
+}
+```
+
+Both syntaxes are correct, and the reason the first might be preferable is that it’s easier to create private variables and methods. However, both are correct to use.
