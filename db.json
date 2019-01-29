@@ -71,6 +71,24 @@
           "name": "Mary Gordon"
         }
       ]
+    },
+    {
+      "id": 6220888,
+      "user": {
+        "id": "abc123",
+        "name": "Adam Jahr"
+      },
+      "category": "nature",
+      "organizer": {
+        "id": "abc123",
+        "name": "Adam Jahr"
+      },
+      "title": "Forest",
+      "description": "Forest description",
+      "location": "Russia",
+      "date": "2019-01-10T12:57:00.000Z",
+      "time": "14:00",
+      "attendees": []
     }
   ]
 }
