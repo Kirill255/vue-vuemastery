@@ -27,28 +27,53 @@
 <script>
 import EventCard from "@/components/EventCard.vue";
 import { mapState } from "vuex";
+import store from "@/store/store";
+
+function getPageEvents(routeTo, next) {
+  const currentPage = parseInt(routeTo.query.page) || 1; // get the event page
+  store.dispatch("event/fetchEvents", { page: currentPage }).then(() => {
+    routeTo.params.page = currentPage; // send the currentPage into the component
+    next();
+  });
+}
 
 export default {
+  props: {
+    page: {
+      type: Number,
+      required: true
+    }
+  },
   components: {
     EventCard
   },
-  created() {
-    // Setting perPage here and not in data means it won't be reactive.
-    // We don't need it to be reactive, and this way our component has access to it.
-    this.perPage = 3;
-
-    this.$store.dispatch("event/fetchEvents", {
-      perPage: this.perPage,
-      page: this.page
-    });
+  // called when the route is initially loaded
+  beforeRouteEnter(routeTo, routeFrom, next) {
+    getPageEvents(routeTo, next);
   },
+  // Our route gets updated when we click on the next page
+  beforeRouteUpdate(routeTo, routeFrom, next) {
+    getPageEvents(routeTo, next);
+  },
+  // beforeRouteEnter(routeTo, routeFrom, next) {
+  //   const currentPage = parseInt(routeTo.query.page) || 1; // get the event page
+  //   store.dispatch("event/fetchEvents", { page: currentPage }).then(() => {
+  //     routeTo.params.page = currentPage; // send the currentPage into the component
+  //     next();
+  //   });
+  // },
+  // beforeRouteUpdate needs the same exact code as beforeRouteEnter
+  // beforeRouteUpdate(routeTo, routeFrom, next) {
+  //   const currentPage = parseInt(routeTo.query.page) || 1; // get the event page
+  //   store.dispatch("event/fetchEvents", { page: currentPage }).then(() => {
+  //     routeTo.params.page = currentPage; // send the currentPage into the component
+  //     next();
+  //   });
+  // },
   computed: {
     ...mapState(["event", "user"]),
-    page() {
-      return parseInt(this.$route.query.page) || 1;
-    },
     hasNextPage() {
-      return this.event.eventsTotal > this.page * this.perPage;
+      return this.event.eventsTotal > this.page * this.event.perPage;
     }
   }
 };

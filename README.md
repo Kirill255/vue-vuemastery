@@ -128,3 +128,34 @@ In the code above, we now take the event which is returned and set it to the val
 Notice how our then callback now has an event parameter, which is filled by the event that returns from the API. To make sure the value gets sent in the callback, we’ll need to add two returns to our event Module.
 
 Now when our fetchEvent Action is called, it returns our event so our router can send it into EventShow as a prop. Pretty nifty, huh? It works just the same, but now the EventList component has one less dependency, making it easier to test and scale.
+
+#### Completing our Progress Bar (Using the Progress Bar with EventList)
+
+Could we use beforeEnter? Nope!!! beforeEnter is only called when the component is created! When we click the next page link, the component is reused. And nothing would happen.
+
+From our lesson on In-Component Route guards we learned that beforeRouteEnter is called when the component is created and beforeRouteUpdate is called when the route changes, but we’re still using the same component. This is what we need to ensure fetchEvents is called when we paginate.
+
+Since both beforeRouteEnter and beforeRouteUpdate need to essentially call the same code, I’m going to extract this duplicate code into a function at the top of our EventList component
+
+You might have noticed: We didn’t remove Vuex from the component.
+
+Before we move on, I want to recognize that we did not remove Vuex from our component code in EventList, like we did with EventShow. We certainly could have passed EventList all of the props it needed to load through the router, like so:
+
+```js
+...
+    routes: [
+    {
+        path: '/',
+        name: 'event-list',
+        component: EventList,
+        props: route => ({
+            page: route.params.page,
+            perPage: route.params.perPage,
+            events: route.params.events,
+            eventTotal: route.params.eventTotal
+        })
+    },
+...
+```
+
+However, we don’t have to go down this road, and set all these values. We already had to load in Vuex inside EventList for beforeRouteUpdate and beforeRouteEnter , so we can keep the Vuex code the same. Again, this is a matter of preference.
