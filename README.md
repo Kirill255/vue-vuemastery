@@ -177,3 +177,17 @@ Let’s create a generic Not Found Component that we’ll redirect to when a pat
 As you can see, we’re creating a 404 path and name which loads our NotFound component, and then we are redirecting to the 404 path when we hit our new catch-all route.
 
 There is a reason we’re redirecting to our 404 page (rather than just rendering the component), which will become clear in a minute
+
+#### What about when we try to view a non-existent Event?
+
+Right now, when we go to an event that doesn’t exist, like /event/1233 we see this:
+
+![non-existent_event](https://user-images.githubusercontent.com/24504648/52012409-8ba0da80-24eb-11e9-9ac7-cf42c1df28fd.jpeg)
+
+It’s not horrible, but nothing renders onto the page except a notification. A better solution would be to add onto our NotFound component and navigate the user there. The great part about navigation guards is that we can change where the user is navigating based on a condition (like if the event exists). Let’s try it!
+
+You also should notice that I’m sending a resource parameter into our 404 component. This will allow me to write a more descriptive error message on our 404 page. In order to receive this param as a prop, I added props: true to my 404 path, added this param to our catch-all route configuration, and now I need to receive that param as an optional prop in my NotFound component.
+
+The only issue with this solution is that we’re assuming all network errors we receive are 404 errors. However, what if the user’s Internet just died or they’re on a super slow connection? We don’t want to give them a 404 error if their Internet dies, but that’s what’s going to happen right now, so let’s fix this.
+
+Creating a new NetworkIssue component. Also, in EventService, let’s set a timeout, so that if our browser waits longer than 15 seconds for the API request to return, it’ll automatically throw an error that will lead to our NetworkIssue component.
