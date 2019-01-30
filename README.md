@@ -191,3 +191,56 @@ You also should notice that I’m sending a resource parameter into our 404 comp
 The only issue with this solution is that we’re assuming all network errors we receive are 404 errors. However, what if the user’s Internet just died or they’re on a super slow connection? We don’t want to give them a 404 error if their Internet dies, but that’s what’s going to happen right now, so let’s fix this.
 
 Creating a new NetworkIssue component. Also, in EventService, let’s set a timeout, so that if our browser waits longer than 15 seconds for the API request to return, it’ll automatically throw an error that will lead to our NetworkIssue component.
+
+### BaseInput component
+
+#### Inheriting Attributes
+
+We’re getting closer to making this BaseInput a standalone, reusable component. But notice how our type and placeholder attributes are still on this input element:
+
+```vue
+<input
+    :value="value"
+    @input="updateValue"
+    type="text" <!-- still here -->
+    placeholder="Add an event title" <!-- still here -->
+/>
+```
+
+We could make BaseInput more flexible by cutting out these attributes from within the component, and adding them when we actually use the component, like so:
+
+```vue
+<BaseInput
+  v-model="event.title"
+  label="Title"
+  type="text"
+  placeholder="Add an event title"
+/>
+```
+
+Now these attributes, type and placeholder, will be inherited by the BaseInput component. But there’s a problem with inheriting attributes like this. When we do so, those attributes are inherited by the root element, in this case the div that wraps everything:
+
+```vue
+<template>
+  <div>
+    <!-- this is where attributes will be inherited -->
+    <label v-if="label">{{ label }}</label>
+    <input :value="value" @input="updateValue" />
+  </div>
+</template>
+```
+
+However, we can add an option to our component to turn off this automatic inheritance, with `inheritAttrs: false`. Then by using \$attrs we can manually decide which element to forward our attributes to, like so:
+
+```vue
+<input
+    :id="label"
+    :value="value"
+    v-bind="$attrs" <!-- specifies this element will inherit attributes -->
+    @input="updateValue"
+/>
+```
+
+Now only our input element will inherit our attributes.
+
+Notice how our base components have a class of field. This is a global style we’re using to add some margin spacing.
