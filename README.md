@@ -118,3 +118,13 @@ Once again we have a valid solution, but there is one more way to do this which 
 In case you’re wondering, here’s the calling order:
 
 ![calling_order](https://user-images.githubusercontent.com/24504648/52001503-a154d680-24d0-11e9-9b23-709bd11e34e8.jpeg)
+
+#### Architectural Choice: Removing Vuex from our Components
+
+Before we move on to the other components, there’s some fun refactoring we could do to this EventShow page. We could completely remove Vuex from EventShow , and send in event as a prop from our new Per-Route Guard. Our EventShow component ends up shrinking a lot.
+
+In the code above, we now take the event which is returned and set it to the value of routeTo.params.event . Then after next() is called. Since props: true is set for the component, params.event gets sent in as the event prop, like we were doing with id before.
+
+Notice how our then callback now has an event parameter, which is filled by the event that returns from the API. To make sure the value gets sent in the callback, we’ll need to add two returns to our event Module.
+
+Now when our fetchEvent Action is called, it returns our event so our router can send it into EventShow as a prop. Pretty nifty, huh? It works just the same, but now the EventList component has one less dependency, making it easier to test and scale.

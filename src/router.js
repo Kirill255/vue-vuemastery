@@ -20,9 +20,10 @@ const router = new Router({
       path: "/event/:id",
       name: "event-show",
       component: EventShow,
-      props: true,
+      props: true, // Set params to props
       beforeEnter(routeTo, routeFrom, next) {
-        store.dispatch("event/fetchEvent", routeTo.params.id).then(() => {
+        store.dispatch("event/fetchEvent", routeTo.params.id).then(event => {
+          routeTo.params.event = event; // Set the event we retrieved
           next();
         });
       }
