@@ -167,3 +167,13 @@ We need to do two things here. We need to start the progress bar before we dispa
 As you can see, we’re just starting the NProgress bar and stopping it if we error out. When the Action is successful, we don't need to stop the progress bar, we still use the router to push to the EventShow view, just like we were before.
 
 When our router follows this path it will call NProgress.start() again. But since it’s already running, nothing new will happen and it will finish loading once the fetchEvent action is complete.
+
+### Error Handling
+
+#### Not Found 404
+
+Let’s create a generic Not Found Component that we’ll redirect to when a path is accessed that doesn’t exist.
+
+As you can see, we’re creating a 404 path and name which loads our NotFound component, and then we are redirecting to the 404 path when we hit our new catch-all route.
+
+There is a reason we’re redirecting to our 404 page (rather than just rendering the component), which will become clear in a minute
