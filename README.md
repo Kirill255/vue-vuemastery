@@ -159,3 +159,11 @@ Before we move on, I want to recognize that we did not remove Vuex from our comp
 ```
 
 However, we don’t have to go down this road, and set all these values. We already had to load in Vuex inside EventList for beforeRouteUpdate and beforeRouteEnter , so we can keep the Vuex code the same. Again, this is a matter of preference.
+
+#### Completing our Progress Bar (Using the Progress Bar with EventCreate)
+
+We need to do two things here. We need to start the progress bar before we dispatch the event shown here, and we need to stop the progress bar if our Action errors out.
+
+As you can see, we’re just starting the NProgress bar and stopping it if we error out. When the Action is successful, we don't need to stop the progress bar, we still use the router to push to the EventShow view, just like we were before.
+
+When our router follows this path it will call NProgress.start() again. But since it’s already running, nothing new will happen and it will finish loading once the fetchEvent action is complete.
