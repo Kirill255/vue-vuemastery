@@ -90,3 +90,21 @@ export default {
 ```
 
 Both syntaxes are correct, and the reason the first might be preferable is that it’s easier to create private variables and methods. However, both are correct to use.
+
+### json-server
+
+`json-server -d 1500 db.json`
+
+With the -d 1500 the API server will add a 1.5 second (1,500 millisecond) delay before returning our data.
+
+### Progress Bar
+
+#### Axios Interceptors
+
+1. Not optimal for multiple API calls at the same time.
+
+This works great until we are using two or more API calls to load a page. In this scenario we’d want to continue to show the progress bar until all API calls return. A common solution to this problem is to create a loading Vuex module that holds the loading State. If you’d like to continue down this road, you might want to check out [this post](https://medium.com/@LoCascioNick/create-a-global-loading-progress-indicator-using-vuex-axios-and-nprogress-20451b33145a) for another example implementation (Yes, the post is in TypeScript, but it’s still quite readable even if you’re not familiar).
+
+2. Templates get rendered before the API call is returned.
+
+On some webpages, it’s not a great user experience to see the page before the data is populated in it reactively. You’ll notice when we load up /event/5 (an event that we have to pull from the API) that the page loads empty before the data flashes onto the screen 1.5 seconds later. This is NOT an optimal user experience since the user sees the page broken before they see it working.
