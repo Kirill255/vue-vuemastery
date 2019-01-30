@@ -33,20 +33,9 @@
 
 <script>
 import { mapState } from "vuex";
-import store from "@/store/store";
-import NProgress from "nprogress";
 
 export default {
   props: ["id"],
-  beforeRouteEnter(routeTo, routeFrom, next) {
-    NProgress.start();
-    // This is called before the component is created. Since the component has not been created yet, we can’t use the `this` keyword here. Not exist `this.id`, but exist `routeTo.params.id`.
-    // this.fetchEvent(this.id)
-    store.dispatch("event/fetchEvent", routeTo.params.id).then(() => {
-      NProgress.done();
-      next();
-    });
-  },
   computed: {
     ...mapState({
       event: state => state.event.event

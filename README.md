@@ -112,3 +112,9 @@ On some webpages, it’s not a great user experience to see the page before the 
 #### In-Component Route Guards
 
 Once again we have a valid solution, but there is one more way to do this which I know I liked the most. If you’re coding along with us, the next lesson is where you’ll want to follow along.
+
+#### Global and Per-Route Guards
+
+In case you’re wondering, here’s the calling order:
+
+![calling_order](https://user-images.githubusercontent.com/24504648/52001503-a154d680-24d0-11e9-9b23-709bd11e34e8.jpeg)
