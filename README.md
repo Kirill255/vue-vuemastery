@@ -108,3 +108,7 @@ This works great until we are using two or more API calls to load a page. In thi
 2. Templates get rendered before the API call is returned.
 
 On some webpages, it’s not a great user experience to see the page before the data is populated in it reactively. You’ll notice when we load up /event/5 (an event that we have to pull from the API) that the page loads empty before the data flashes onto the screen 1.5 seconds later. This is NOT an optimal user experience since the user sees the page broken before they see it working.
+
+#### In-Component Route Guards
+
+Once again we have a valid solution, but there is one more way to do this which I know I liked the most. If you’re coding along with us, the next lesson is where you’ll want to follow along.
