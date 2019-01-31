@@ -244,3 +244,11 @@ However, we can add an option to our component to turn off this automatic inheri
 Now only our input element will inherit our attributes.
 
 Notice how our base components have a class of field. This is a global style we’re using to add some margin spacing.
+
+### BaseSelect component
+
+#### Getting more complex
+
+While BaseSelect will work if our options are primitive data types, such as strings or integers, what if our our options were an array of objects? Or what if we needed the ability to select multiple options, not just one?
+
+For more complex selecting components, we recommend exploring [vue-multiselect](https://github.com/shentao/vue-multiselect). This is a robust library created and maintained by Core Vue Team Member Damian Dulisz.
