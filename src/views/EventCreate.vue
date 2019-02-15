@@ -56,11 +56,13 @@
         class="field"
       />
 
-      <input
+      <BaseButton
         type="submit"
-        class="button -fill-gradient"
-        value="Submit"
-      />
+        buttonClass="-fill-gradient"
+      >
+        Message
+      </BaseButton>
+
     </form>
   </div>
 </template>

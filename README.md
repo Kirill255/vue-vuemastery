@@ -252,3 +252,15 @@ Notice how our base components have a class of field. This is a global style we�
 While BaseSelect will work if our options are primitive data types, such as strings or integers, what if our our options were an array of objects? Or what if we needed the ability to select multiple options, not just one?
 
 For more complex selecting components, we recommend exploring [vue-multiselect](https://github.com/shentao/vue-multiselect). This is a robust library created and maintained by Core Vue Team Member Damian Dulisz.
+
+### BaseButton component
+
+### Dynamic Button Styles
+
+Now we need to think about how we can add dynamic styles to our button. You might think that the solution would be to set inheritAttrs to false like we did in our BaseInput lesson, which allowed us to inherit attributes added on the parent scope.
+
+However, this isn’t currently how Vue works. As of now, the class and style attributes aren’t available to you on \$attrs . However, we can expect that to change in Vue 3.
+
+So if we can’t v-bind to our \$attrs , how can we apply a dynamic class to our BaseButton? We can use props for that.
+
+Even though class and style aren’t currently available t us in \$attrs , we’ll still want to be inheriting attributes because we still want to have the ability to inherit attributes added on the parent scope, such as disabled .
