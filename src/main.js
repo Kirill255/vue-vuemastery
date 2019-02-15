@@ -5,6 +5,9 @@ import App from "./App.vue";
 import router from "./router";
 import store from "./store/store";
 import BaseIcon from "@/components/BaseIcon";
+import Vuelidate from "vuelidate";
+
+Vue.use(Vuelidate);
 
 import "nprogress/nprogress.css";
 
