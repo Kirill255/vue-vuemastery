@@ -264,3 +264,130 @@ However, this isn’t currently how Vue works. As of now, the class and style at
 So if we can’t v-bind to our \$attrs , how can we apply a dynamic class to our BaseButton? We can use props for that.
 
 Even though class and style aren’t currently available t us in \$attrs , we’ll still want to be inheriting attributes because we still want to have the ability to inherit attributes added on the parent scope, such as disabled .
+
+### Form Validation with Vuelidate
+
+#### BaseSelect
+
+Now this all should work, right? Let’s check the browser to make sure. We’ll focus on the the category field, then click away from it (blur), and our error message and styling should appear. But wait… nothing is happening. The error message isn’t showing up. What’s going on here?
+
+Well, we’ve added that blur event listener to BaseSelect, but we haven’t given the native select element inside of BaseSelect the ability to inherit that event listener. Fortunately this is an easy fix.
+
+Remember when we created our BaseButton in a previous lesson? We added v-on="$listeners" to the native button element within it so that it could inherit the event listeners added in the parent scope. We can do the same thing and add v-on="$listeners" to our BaseSelect component’s select element so it can inherit the blur event listener.
+
+#### BaseInput
+
+We’ll also make sure to inherit the blur event listener and all other potential listeners on the input element of BaseInput, just like we did with BaseSelect ’s select element.
+
+Now let’s test this out in the browser. We’ll focus on the field, then click away from it, which should trigger our error message and styling.
+
+Great it’s working so far. But when we actually try to input a title here, we get this weird [object InputEvent] showing up.
+
+Oh geez… what’s going on here? The reason for this strange behavior is a bit complicated to grasp, so let’s tackle this piece by piece.
+
+We have v-model on our BaseInput:
+
+```vue
+<BaseInput
+  label="Title"
+  placeholder="Title"
+  type="text"
+  class="field"
+  :class="{ error: $v.event.title.$error }"
+  v-model="event.title" <!-- right here -->
+  @blur="$v.event.title.$touch()"
+/>
+```
+
+As we covered in our lesson where we built BaseInput , v-model is really just syntactic sugar. In this case, v-model=`"`event.title``" translates to:
+
+```js
+:value="event.title"
+@input="(value) => { event.title = value }"
+```
+
+Why is this important? Well, this means we have a listener here for the input event. And since we just added v-on=`"`\$listeners``" that means we are inheriting that input event listener onto our BaseInput’s input element.
+
+```vue
+<input
+  :value="value"
+  v-bind="$attrs"
+  @input="updateValue"
+  v-on="$listeners"
+>
+```
+
+And why is that important? Well, look again at what’s on that element. We’ve also got @input="updateValue" . That means we have two input event listeners. One that is triggering the updateValue method, and one that we’re inheriting from the parent scope, which is hidden under the sugar-coating of our v-model . This means we have a conflict, and the second input (the one from the v-model ) is taking precedence.
+
+Okay so we know what caused this funky behavior. But how do we fix it? Take a few deep breaths, because the solution to this problem is as convoluted as the issue that caused it.
+
+Resolving Our Conflict.
+
+If two people are in conflict about something, what’s a good way to resolve that? How about they shake hands and compromise? What does this have to do with our code? Well, that’s basically what we’re about to implement: a compromise. We can encapsulate that compromise within a computed property, which we’ll call listeners.
+
+```js
+computed: {
+  listeners() {
+    return {
+      ...this.$listeners,
+      input: this.updateValue
+    }
+  }
+}
+```
+
+Since both of our input events want to exist but they’re currently messing with each other, the compromise is: they can both exist alongside each other within a listeners object, which our computed property returns. Notice how we’re using the object spread operator to merge the inherited \$listeners into this object (i.e. the input event listener hidden in v-model ), and below that is a property for our input event that triggers the updateValue method.
+
+Since there are now two input definitions on this object. Because of the way JavaScript objects work, the one that is defined last will take precedence. In this case, the input event that triggers our updateValue method takes precedence, which solves our issue!
+
+Now, in the template, we can simply add our computed listeners(listeners, not \$listeners) to the input element.
+
+```vue
+<input :value="value"
+  v-bind="$attrs"
+  v-on="listeners"
+>
+```
+
+#### Date, datepicker
+
+We’ve reached our final field that needs to be validated, which is our date . This one is a bit special since we’re using [vuejs-datepicker](https://www.npmjs.com/package/vuejs-datepicker), a third-party Vue component. But the steps we’ll take are the same.
+
+We’ll add an error message and wrap it in a conditionally displayed template. But instead of triggering Vuelidate’s \$touch method on blur , since that won’t be available to us due to the way this component is written, we’ll instead use vuejs-datepicker’s opened event listener.
+
+```vue
+<div class="field">
+  <label>Date</label>
+  <datepicker
+    placeholder="Select a date"
+    v-model="event.date"
+    @opened="$v.event.date.$touch()" <!-- triggering $touch on opened -->
+  />
+</div>
+<template v-if="$v.event.date.$error">
+  <p v-if="!$v.event.date.required" class="errorMessage">Date is required.</p>
+</template>
+```
+
+This will give us essentially the same behavior as our blur did. When a user opens this component, $v.event.date will be touched and therefor $dirty . By “open”, we’re referring to when a user clicks on the component and the box opens, allowing for a date to be selected.
+
+Great. Now the last step is to add some dynamic error class binding to this field. This is also a bit unique. Instead of binding to the actual class attribute, we’ll bind to input-class , which is a prop provided to us by vuejs-datepicker.
+
+```vue
+<div class="field">
+  <label>Date</label>
+  <datepicker
+    placeholder="Select a date"
+    v-model="event.date"
+    @opened="$v.event.date.$touch()"
+    :input-class="{ error: $v.event.date.$error }" <!-- binding error class -->
+  />
+</div>
+<template v-if="$v.event.date.$error">
+  <p v-if="!$v.event.date.required" class="errorMessage">Date is required.</p>
+</template>
+```
+
+If you continue using this datepicker component and need to manipulate it in ways we haven’t covered yet, check out the docs, as they are pretty helpful for figuring out what unique code might be needed to achieve your implementation. As you’ll see in the “Events” section, there is also a “closed” event. That would have been even closer to replicating the blur event; however, when we tried using that, it didn’t work for us and we discovered there’s an ongoing [issue](https://github.com/charliekassel/vuejs-datepicker/issues/625) with it. So we are going with opened instead, which works for our needs.
+
+it's strange but both events didn't work for me!!! Maybe this is because i'm using a different version, I use "vuejs-datepicker": "^1.5.4", in this course "vuejs-datepicker": "^1.5.3".

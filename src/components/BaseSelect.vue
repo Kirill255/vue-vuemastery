@@ -4,6 +4,7 @@
     <select
       :value="value"
       @change="updateValue"
+      v-on="$listeners"
       v-bind="$attrs"
     >
       <option
