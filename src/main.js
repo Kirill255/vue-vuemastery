@@ -4,7 +4,7 @@ import camelCase from "lodash/camelCase";
 import App from "./App.vue";
 import router from "./router";
 import store from "./store/store";
-import BaseIcon from "@/components/BaseIcon";
+import "nprogress/nprogress.css";
 import Vuelidate from "vuelidate";
 
 Vue.use(Vuelidate);
@@ -15,10 +15,6 @@ Vue.use(Vuelidate);
 //     console.log("I am mixed into every component.");
 //   }
 // });
-
-import "nprogress/nprogress.css";
-
-Vue.component("BaseIcon", BaseIcon);
 
 Vue.config.productionTip = false;
 
