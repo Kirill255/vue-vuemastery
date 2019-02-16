@@ -9,6 +9,13 @@ import Vuelidate from "vuelidate";
 
 Vue.use(Vuelidate);
 
+// Global mixin
+// Vue.mixin({
+//   mounted() {
+//     console.log("I am mixed into every component.");
+//   }
+// });
+
 import "nprogress/nprogress.css";
 
 Vue.component("BaseIcon", BaseIcon);

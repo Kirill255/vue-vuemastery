@@ -391,3 +391,23 @@ Great. Now the last step is to add some dynamic error class binding to this fiel
 If you continue using this datepicker component and need to manipulate it in ways we haven’t covered yet, check out the docs, as they are pretty helpful for figuring out what unique code might be needed to achieve your implementation. As you’ll see in the “Events” section, there is also a “closed” event. That would have been even closer to replicating the blur event; however, when we tried using that, it didn’t work for us and we discovered there’s an ongoing [issue](https://github.com/charliekassel/vuejs-datepicker/issues/625) with it. So we are going with opened instead, which works for our needs.
 
 it's strange but both events didn't work for me!!! Maybe this is because i'm using a different version, I use "vuejs-datepicker": "^1.5.4", in this course "vuejs-datepicker": "^1.5.3".
+
+### Mixins
+
+#### Global Mixins
+
+It’s also worth noting that we are able to create global mixins, which would be applied to each and every component within our application. In a Vue CLI-generated project, we’d create a global mixin in our main.js file, just above the main Vue instance.
+
+```js
+Vue.mixin({
+  mounted() {
+    console.log('I am mixed into every component.')
+  }
+})
+
+new Vue({
+  ...
+})
+```
+
+However, the use cases for a global mixin are rare and it is highly recommended that you use global mixins with extreme caution or simply avoid using them at all since they will be affecting literally every component at every level of your app.
